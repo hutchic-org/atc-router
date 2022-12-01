@@ -10,6 +10,7 @@ on:  # yamllint disable-line rule:truthy
 env:
   DESTDIR: /tmp/build
   LUA_LIB_DIR: /usr/local/openresty/lualib
+  CARGO_NET_GIT_FETCH_WITH_CLI: true
 
 jobs:
   release:
@@ -31,7 +32,7 @@ jobs:
     needs: release
     name: Create Release Artifacts
     runs-on: ubuntu-latest
-    container: quay.io/pypa/manylinux2014_x86_64
+    container: hutchic/temp:rust
     strategy:
       matrix:
         target:
@@ -46,9 +47,6 @@ jobs:
         toolchain: stable
         target: ${{ matrix.target }}
         override: true
-    - name: Install the aarch64 toolchain
-      run: |
-        yum install -y gcc-aarch64-linux-gnu binutils-aarch64-linux-gnu glibc-devel
     - name: Build and Install atc-router
       env:
         TARGET: ${{ matrix.target }}
