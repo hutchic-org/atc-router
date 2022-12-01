@@ -32,13 +32,11 @@ jobs:
     needs: release
     name: Create Release Artifacts
     runs-on: ubuntu-latest
-    container: quay.io/pypa/manylinux2014_x86_64
+    container: quay.io/pypa/manylinux2014_aarch64
     strategy:
       matrix:
         target:
           - aarch64-unknown-linux-musl
-          - x86_64-unknown-linux-gnu
-          - x86_64-unknown-linux-musl
           - aarch64-unknown-linux-gnu
     steps:
     - uses: actions/checkout@v3
@@ -47,9 +45,6 @@ jobs:
         toolchain: stable
         target: ${{ matrix.target }}
         override: true
-    - name: Install the aarch64 toolchain
-      run: |
-        yum install -y gcc-aarch64-linux-gnu binutils-aarch64-linux-gnu glibc-devel
     - name: Build and Install atc-router
       env:
         TARGET: ${{ matrix.target }}
