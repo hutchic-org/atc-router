@@ -30,7 +30,7 @@ jobs:
   artifacts:
     needs: release
     name: Create Release Artifacts
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
     strategy:
       matrix:
         target:
