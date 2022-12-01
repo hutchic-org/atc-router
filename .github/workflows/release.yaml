@@ -30,7 +30,8 @@ jobs:
   artifacts:
     needs: release
     name: Create Release Artifacts
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
+    container: quay.io/pypa/manylinux2010_x86_64
     strategy:
       matrix:
         target:
