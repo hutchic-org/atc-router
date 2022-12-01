@@ -48,7 +48,7 @@ jobs:
         override: true
     - name: Install the aarch64 toolchain
       run: |
-        yum install -y gcc-aarch64-linux-gnu binutils-aarch64-linux-gnu
+        yum install -y gcc-aarch64-linux-gnu binutils-aarch64-linux-gnu glibc-devel
     - name: Build and Install atc-router
       env:
         TARGET: ${{ matrix.target }}
