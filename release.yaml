@@ -51,4 +51,8 @@ jobs:
       uses: softprops/action-gh-release@v1
       with:
         tag_name: ${{ needs.release.outputs.release-git-tag }}
+<<<<<<< HEAD:.github/workflows/release.yaml
         files: ${{ matrix.architecture }}-${{ matrix.ostype }}.tar.gz
+=======
+        files: ${{ matrix.target }}.tar.gz
+>>>>>>> c949e2a (wip):release.yaml
