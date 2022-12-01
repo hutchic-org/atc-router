@@ -1,0 +1,54 @@
+---
+name: Release
+
+on:  # yamllint disable-line rule:truthy
+  pull_request:
+  push:
+    branches:
+    - main
+
+env:
+  DESTDIR: /tmp/build
+  LUA_LIB_DIR: /usr/local/openresty/lualib
+
+jobs:
+  release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    outputs:
+      published: ${{ steps.release.outputs.published }}
+      release-git-tag: ${{ steps.release.outputs.release-git-tag }}
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+    - name: Release
+      id: release
+      uses: ahmadnassri/action-semantic-release@v2.1.10
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  artifacts:
+    needs: release
+    name: Create Release Artifacts
+    runs-on: ubuntu-18.04
+    strategy:
+      matrix:
+        architecture: [aarch64]
+        ostype: [linux-gnu]
+    steps:
+    - uses: actions/checkout@v3
+    - uses: docker/setup-qemu-action@v2
+    - uses: docker/setup-buildx-action@v2
+#    - name: Setup tmate session
+#      uses: mxschmitt/action-tmate@v3
+#      with:
+#        limit-access-to-actor: true
+    - name: Build, Install and Package atc-router
+      run: |
+        docker buildx build --build-arg ARCHITECTURE=${{ matrix.architecture }} --build-arg OSTYPE=${{ matrix.ostype }} --output type=tar,dest=${{ matrix.architecture }}-${{ matrix.ostype }}.tar.gz .
+    - name: Add Release Artifacts to the Github Release
+      if: ${{ needs.release.outputs.published == 'true' }}
+      uses: softprops/action-gh-release@v1
+      with:
+        tag_name: ${{ needs.release.outputs.release-git-tag }}
+        files: ${{ matrix.architecture }}-${{ matrix.ostype }}.tar.gz
