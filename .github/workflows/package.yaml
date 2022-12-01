@@ -9,7 +9,6 @@ on:  # yamllint disable-line rule:truthy
 
 env:
   DESTDIR: /tmp/build
-  LUA_LIB_DIR: /usr/local/openresty/lualib
 
 jobs:
   release:
@@ -33,26 +32,26 @@ jobs:
     runs-on: ubuntu-18.04
     strategy:
       matrix:
-        architecture: [aarch64]
-        ostype: [linux-gnu]
+        target:
+          - x86_64-unknown-linux-gnu
+          - x86_64-unknown-linux-musl
+          - aarch64-unknown-linux-gnu
+          - aarch64-unknown-linux-musl
     steps:
     - uses: actions/checkout@v3
-    - uses: docker/setup-qemu-action@v2
-    - uses: docker/setup-buildx-action@v2
-#    - name: Setup tmate session
-#      uses: mxschmitt/action-tmate@v3
-#      with:
-#        limit-access-to-actor: true
-    - name: Build, Install and Package atc-router
+    - uses: actions-rs/toolchain@v1
+      with:
+        toolchain: stable
+        target: ${{ matrix.target }}
+        override: true
+    - name: Build & Install
       run: |
-        docker buildx build --build-arg ARCHITECTURE=${{ matrix.architecture }} --build-arg OSTYPE=${{ matrix.ostype }} --output type=tar,dest=${{ matrix.architecture }}-${{ matrix.ostype }}.tar.gz .
+        make install
+    - name: Compress and rename artifacts
+      run: tar -C /tmp/build/ -czvf ${{ matrix.target }}.tar.gz .
     - name: Add Release Artifacts to the Github Release
-      if: ${{ needs.release.outputs.published == 'true' }}
+      if: ${{ needs.release.outputs.published }} == 'true'
       uses: softprops/action-gh-release@v1
       with:
         tag_name: ${{ needs.release.outputs.release-git-tag }}
-<<<<<<< HEAD:.github/workflows/release.yaml
-        files: ${{ matrix.architecture }}-${{ matrix.ostype }}.tar.gz
-=======
         files: ${{ matrix.target }}.tar.gz
->>>>>>> c949e2a (wip):release.yaml
