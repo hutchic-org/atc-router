@@ -55,13 +55,16 @@ jobs:
           target: ${{ matrix.target }}
           override: true
       - uses: actions-rs/cargo@v1
-        env:
-          TARGET: ${{ matrix.target }}
         with:
           use-cross: true
-          command: install
-      - name: Compress and rename artifacts
-        run: tar -C /tmp/build/ -czvf ${{ matrix.target }}.tar.gz .
+          command: build
+          args: --release --target ${{ matrix.target }}
+      - name: Install, Compress, and rename artifacts
+        env:
+          DESTDIR: ${{ env.DESTDIR }}
+        run: |
+          make install
+          tar -C /tmp/build/ -czvf ${{ matrix.target }}.tar.gz .
       - name: Add Release Artifacts to the Github Release
         if: ${{ needs.release.outputs.published == 'true' }}
         uses: softprops/action-gh-release@v1
