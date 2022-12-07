@@ -57,7 +57,7 @@ jobs:
       - uses: actions-rs/cargo@v1
         with:
           use-cross: true
-          command: build
+          command: install
           args: --release --target ${{ matrix.target }}
       - name: Compress and rename artifacts
         run: tar -C /tmp/build/ -czvf ${{ matrix.target }}.tar.gz .
