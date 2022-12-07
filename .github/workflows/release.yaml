@@ -50,8 +50,6 @@ jobs:
           target: ${{ matrix.target }}
           override: true
       - uses: actions-rs/cargo@v1
-        env:
-          RUSTFLAGS: '-C target-feature=-crt-static'
         with:
           use-cross: true
           command: build

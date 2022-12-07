@@ -28,7 +28,7 @@ build: target/release/libatc_router.so target/release/libatc_router.a
 target/release/libatc_router.%: src/*.rs
 	$(CARGO) build --release --target $(TARGET)
 
-install: build
+install:
 	$(INSTALL) -d $(DESTDIR)$(LUA_LIB_DIR)/resty/router/
 	$(INSTALL) -m 664 lib/resty/router/*.lua $(DESTDIR)$(LUA_LIB_DIR)/resty/router/
 	$(INSTALL) -m 775 target/$(TARGET)/release/libatc_router.$(SHLIB_EXT) $(DESTDIR)$(LUA_LIB_DIR)/libatc_router.so
