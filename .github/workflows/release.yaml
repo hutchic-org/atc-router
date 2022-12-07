@@ -44,11 +44,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      - uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-          target: ${{ matrix.target }}
-          override: true
       - uses: actions-rs/cargo@v1
         with:
           use-cross: true
